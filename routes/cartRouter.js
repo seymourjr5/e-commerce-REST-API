@@ -1,5 +1,4 @@
 const pool = require('../db');
-const customerRouter = require('./customerRouter');
 
 const cartRouter = require('express').Router();
 

@@ -1,9 +1,16 @@
-const pool = require('../db');
+const passport = require('passport');
 
 const loginRouter = require('express').Router();
 
 module.exports = loginRouter;
 
+loginRouter.post('/', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: true
+  }));
+
+/*LOGIN LOGIC WITHOUT PASSPORT.js MIDDLEWARE
 loginRouter.post('/', async (req, res) =>{
     try{
     const { username, password } = req.body;
@@ -19,3 +26,4 @@ loginRouter.post('/', async (req, res) =>{
         console.error(err.message);
     }
 });
+*/
