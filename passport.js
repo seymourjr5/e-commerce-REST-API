@@ -1,17 +1,20 @@
 const LocalStrategy = require('passport-local').Strategy
-const pool = require('./db');
 
-function initialize(passport, getCustomerByUsername ,getUserById) {
+function initialize(passport, getCustomerByUsername ,getCustomerById) {
   const authenticateUser = async (username, password, done) => {
-    const user = getCustomerByUsername(username);
+    const user = await getCustomerByUsername(username);
+    console.log(user);
     if (user == null) {
-      return done(null, false, { message: 'No user with that username' })
+        console.log('Inside first if');
+      return done(null, false, { message: 'No user with that username' });
     }
 
     try {
       if (password === user.password) {
+        console.log('Inside Try if');
         return done(null, user)
       } else {
+        console.log('Inside else ');
         return done(null, false, { message: 'Password incorrect' })
       }
     } catch (e) {
@@ -22,7 +25,7 @@ function initialize(passport, getCustomerByUsername ,getUserById) {
   passport.use(new LocalStrategy({ usernameField: 'username' }, authenticateUser))
   passport.serializeUser((user, done) => done(null, user.id))
   passport.deserializeUser((id, done) => {
-    return done(null, getUserById(id))
+    return done(null, getCustomerById(id))
   })
 }
 

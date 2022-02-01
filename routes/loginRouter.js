@@ -4,11 +4,27 @@ const loginRouter = require('express').Router();
 
 module.exports = loginRouter;
 
-loginRouter.post('/', passport.authenticate('local', {
+function checkNotAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+      return res.redirect('/')
+    }
+    next()
+  }
+
+loginRouter.get('/', (req, res) =>{
+    res.render('login.ejs');
+});  
+
+loginRouter.post('/', checkNotAuthenticated, passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login',
     failureFlash: true
   }));
+
+loginRouter.delete('/logout', (req, res) => {
+    req.logOut();
+    res.redirect('/login');
+  });
 
 /*LOGIN LOGIC WITHOUT PASSPORT.js MIDDLEWARE
 loginRouter.post('/', async (req, res) =>{

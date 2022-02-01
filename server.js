@@ -10,35 +10,8 @@ const flash = require('express-flash');
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
-
-
-
-//body-parser express middleware
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-
-//base router set-up
-const apiRouter = require('./routes/api');
-app.use('/', apiRouter);
-
-//Helper Functions 
-const getCustomerByUsername = async (username) =>{
-    try{
-    const dbQuery = await pool.query(`SELECT * FROM customer WHERE username = '${username}'`);
-    return dbQuery.rows[0];
-    }catch(err){
-        console.error(err.message);
-    }
-}
-
-const getCustomerById = async (id) =>{
-    try{
-        const dbQuery = await pool.query(`SELECT * FROM customer WHERE id = ${id}`);
-        return dbQuery.rows[0];
-    }catch(err){
-        console.error(err.message);
-    }
-}
+//Helper Functions import
+const { getCustomerById, getCustomerByUsername } = require('./helpers');
 
 //initialize passport
 const initializePassport = require('./passport')
@@ -48,7 +21,11 @@ initializePassport(
   getCustomerById
 );
 
+//view engine setup
+app.set('view-engine', 'ejs');
+
 app.use(express.urlencoded({ extended: false }));
+
 app.use(flash());
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -60,6 +37,16 @@ app.use(passport.session())
 
 
 
+//body-parser express middleware
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
+//base router set-up
+const apiRouter = require('./routes/api');
+app.use('/', apiRouter);
+app.get('/', (req, res) =>{
+    res.send(`Welcome to your homepage`);
+});
 
 
 const PORT = process.env.PORT || 4001;
